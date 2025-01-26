@@ -1,24 +1,54 @@
-import pytesseract
+import os
+import re
 from PIL import Image
-import fitz  # PyMuPDF
+import pytesseract
 
-def extract_text_from_scanned_pdf(pdf_path):
-    # Open the PDF file
-    document = fitz.open(pdf_path)
-    
-    # Initialize text variable
-    text = ""
-    
-    # Iterate through the pages and perform OCR
-    for page_num in range(len(document)):
-        page = document.load_page(page_num)
-        pix = page.get_pixmap()
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-        text += pytesseract.image_to_string(img)
-    
+def clean_text(text):
+    """
+    Clean and structure the extracted text.
+    :param text: Raw text extracted from the image.
+    :return: Cleaned and structured text.
+    """
+    # Remove unwanted newlines and extra spaces
+    text = re.sub(r'\s+', ' ', text.strip())
+
+    # Optionally, remove non-alphanumeric characters (except spaces)
+    text = re.sub(r'[^A-Za-z0-9\s.,!?\'"-]', '', text)
+
+    # You can add more text cleaning or structuring steps here as needed
     return text
 
+def extract_text(image_path):
+    """
+    Extract text from an image and structure it.
+    :param image_path: Path to the image file.
+    :return: Dictionary with structured text or an error message.
+    """
+    try:
+        # Check if file exists
+        if not os.path.exists(image_path):
+            return {'error': 'Image file not found'}
+        
+        # Open the image
+        img = Image.open(image_path)
+        
+        # Extract text using pytesseract
+        raw_text = pytesseract.image_to_string(img)
+
+        if not raw_text.strip():
+            return {'error': 'No text detected in the image'}
+
+        # Clean and structure the text
+        structured_text = clean_text(raw_text)
+
+        return {'text': structured_text}
+    
+    except Exception as e:
+        return {'error': str(e)}
+
 # Example usage
-pdf_path = '/home/yuv/Documents/docsss/DBMS/mca-1-sem-relational-database-management-system-mcan-102-2023.pdf'
-extracted_text = extract_text_from_scanned_pdf(pdf_path)
-print(extracted_text)
+image_path = 'file_path'
+result = extract_text(image_path)
+
+# Print the result
+print(result)
