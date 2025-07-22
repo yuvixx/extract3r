@@ -1,1 +1,5 @@
+## 📦 `requirements.txt`
 
+
+pillow
+pytesseract
