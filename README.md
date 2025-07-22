@@ -1,5 +1,4 @@
 # Snap2Text
-
 Snap2Text is a lightweight Python tool that extracts text from images using Tesseract OCR. It preprocesses the image and returns clean, structured output for easy downstream use.
 
 ## 🔍 Features
