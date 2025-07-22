@@ -1,1 +1,1 @@
-# extract3r
+# CogniRead OCR
